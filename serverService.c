@@ -56,8 +56,10 @@ char *_signout(char username[20])
 {
   if (checkAccountExist(username))
   {
+    account = getAccount(username);
     if (!strcmp(account->username, username))
     {
+      account->isLogin = 0;
       account = NULL;
       return ("Goodbye");
     }
@@ -96,6 +98,7 @@ char *_getRank(char name[])
   }
 
   ranktemp = rankfirst;
+  
 
   while (ranktemp)
   {
@@ -132,3 +135,73 @@ char *_getRank(char name[])
 
   return sendRank;
 }
+
+char *_saveLog( char log[], int type, char player1[], char player2[], int result)
+{
+    addToLogGameList (log, type, result, player1, player2);
+    writeLogFile();
+    return ("Save log successfully");
+}
+
+char *_getLog(char name[])
+{
+  loggame *temp;
+  char *sendLog = (char *)calloc(500, sizeof(char));
+  char *str;
+  int i = 1;
+
+  temp = loggamefirst;
+
+  while (temp)
+  {
+    if (strcmp(name, temp->player1) == 0 || strcmp(name, temp->player2) == 0)
+    {
+      str = (char *)calloc(3, sizeof(char));
+      if (temp->type == 0)
+        strcat(sendLog, "\033[1;33mRank\033[0m");
+      else  
+        strcat(sendLog, "\033[1;32mNormal\033[0m");
+      strcat(sendLog, "\t");
+      if (strcmp(name, temp->player1) == 0){
+          strcat(sendLog, temp->player2);
+          strcat(sendLog, "\t");
+          if (temp->result == 0)
+              strcat(sendLog, "\033[1;33mDraw\033[0m");
+          else if (temp->result == 1)
+              strcat(sendLog, "\033[1;32mWin\033[0m");
+          
+          if (temp->result == 2){
+              strcat(sendLog, "\t");
+              strcat(sendLog, temp->player2);
+          } else {
+              strcat(sendLog, "\t");
+              strcat(sendLog, temp->player1);
+          }
+      }
+      else{
+          strcat(sendLog, temp->player1);
+          strcat(sendLog, "\t");
+          if (temp->result == 0)
+              strcat(sendLog, "\033[1;33mDraw\033[0m");
+          else 
+              strcat(sendLog, "\033[1;31mLose\033[0m");
+         
+          if (temp->result == 2){
+              strcat(sendLog, "\t");
+              strcat(sendLog, temp->player2);
+          } else {
+              strcat(sendLog, "\t");
+              strcat(sendLog, temp->player1);
+          }
+      }
+
+      strcat(sendLog, "\t");
+      strcat(sendLog, temp->log);
+      strcat(sendLog, "\n");
+    }
+    temp = temp->next;
+  }
+  
+  return sendLog;
+} 
+

@@ -22,6 +22,19 @@
 int loginTime = 3;
 char name[20] = "";
 
+void login(int sockfd);
+void signup(int sockfd);
+void logout(int sockfd);
+void normalQueue(int sockfd);
+void normalgame(int sockfd, char name[]);
+void rankQueue(int sockfd, char name[]);
+void rankgame(int sockfd, char name[]);
+void challenge(int sockfd);
+void showRank(int sockfd, char name[]);
+void showLog(int sockfd, char name[]);
+void gameScreen(int sockfd);
+
+
 void login(int sockfd)
 {
   char buff[MAX], username[MAX];
@@ -38,8 +51,7 @@ void login(int sockfd)
     strcpy(username, buff);
     buff[n - 1] = '~';
     printf("Enter password : ");
-    while ((buff[n++] = getchar()) != '\n')
-      ;
+    while ((buff[n++] = getchar()) != '\n');
 
     send(sockfd, buff, sizeof(buff), 0);
     bzero(buff, sizeof(buff));
@@ -127,7 +139,69 @@ void logout(int sockfd)
   printf("From Server : %s\n", buff);
 }
 
-void normalgame(int sockfd)
+void normalQueue(int sockfd)
+{
+  char buff[MAX], temp[MAX];
+  for(;;)
+  {
+    bzero(buff, sizeof(buff));
+    strcat(buff, "n");
+    send(sockfd, buff, sizeof(buff), 0);
+    bzero(buff, sizeof(buff));
+    recv(sockfd, buff, sizeof(buff), 0);
+    printf("Already player : \n%s\n\n", buff);
+    printf("You need to refresh before choose your opponent\n(1) Start game\n(2) Refresh\n(3) Back to menu\n");
+
+    char d;
+    scanf("%c", &d);
+
+    if (d == '1')
+    {
+      printf("Enter player's ID to start game\n");
+      bzero(buff, sizeof(buff));
+      bzero(temp, sizeof(temp));
+      
+      strcat(buff, "n~");
+    
+      int n = 0;
+
+      getchar();
+
+      while ((temp[n++] = getchar()) != '\n');
+      
+      temp[n - 1] = '\0';
+      strcat(buff, temp);
+      strcat(buff, "~");
+
+      send(sockfd, buff, sizeof(buff), 0);
+      bzero(buff, sizeof(buff));
+      recv(sockfd, buff, sizeof(buff), 0);
+
+      if ( buff[0] == 'w'){
+        printf("Waiting for player to accept\n");
+        normalgame(sockfd, name);
+        break;
+      } else if (buff[0] == 's'){
+        normalgame(sockfd, name);
+        break;
+      } else {
+        printf("Player is busy\n");
+      }
+    }
+    if (d == '2')
+    {
+      clear();
+      continue;
+    }
+    if (d == '3')
+    {
+      send(sockfd, "n@", sizeof("n@"), 0);
+      break;
+    }
+  }
+}
+
+void normalgame(int sockfd, char name[])
 {
   int a, iPort;
   char buff[MAX], *ip_port, *ip, *cPort;
@@ -160,6 +234,68 @@ void normalgame(int sockfd)
     strcat(cPort, return_port(buff));
     iPort = atoi(cPort);
     connectP2P(ip, iPort, 1, name, sockfd);
+  }
+}
+
+void rankQueue(int sockfd, char name[])
+{
+  char buff[MAX], temp[MAX];
+  for(;;)
+  {
+    bzero(buff, sizeof(buff));
+    strcat(buff, "r");
+    send(sockfd, buff, sizeof(buff), 0);
+    bzero(buff, sizeof(buff));
+    recv(sockfd, buff, sizeof(buff), 0);
+    printf("Already player : \n%s\n\n", buff);
+    printf("You need to refresh before choose your opponent\n(1) Start game\n(2) Refresh\n(3) Back to menu\n");
+
+    char d;
+    scanf("%c", &d);
+
+    if (d == '1')
+    {
+      printf("Enter player's ID to start game\n");
+      bzero(buff, sizeof(buff));
+      bzero(temp, sizeof(temp));
+      
+      strcat(buff, "r~");
+    
+      int n = 0;
+
+      getchar();
+
+      while ((temp[n++] = getchar()) != '\n');
+      
+      temp[n - 1] = '\0';
+      strcat(buff, temp);
+      strcat(buff, "~");
+
+      send(sockfd, buff, sizeof(buff), 0);
+      bzero(buff, sizeof(buff));
+      recv(sockfd, buff, sizeof(buff), 0);
+
+      if ( buff[0] == 'w'){
+        printf("Waiting for player to accept\n");
+        rankgame(sockfd, name);
+        break;
+      } else if (buff[0] == 's'){
+        rankgame(sockfd, name);
+        break;
+      } else {
+        printf("Player is busy\n");
+      }
+    }
+    if (d == '2')
+    {
+      clear();
+      continue;
+    }
+    if (d == '3')
+    {
+      send(sockfd, "r@", sizeof("r@"), 0);
+      break;
+    }
   }
 }
 
@@ -199,6 +335,118 @@ void rankgame(int sockfd, char name[])
   }
 }
 
+void challenge(int sockfd){
+  char buff[MAX], temp[MAX];
+  for(;;)
+  {
+    bzero(buff, sizeof(buff));
+    strcat(buff, "c");
+    send(sockfd, buff, sizeof(buff), 0);
+    bzero(buff, sizeof(buff));
+    recv(sockfd, buff, sizeof(buff), 0);
+    printf("Already player : \n%s\n\n", buff);
+    printf("You need to refresh before choose your opponent\n(1) Start game\n(2) Refresh\n(3) Back to menu\n");
+
+    char d;
+    scanf("%c", &d);
+
+    if (d == '1')
+    {
+      printf("Enter player's ID to challenge\n");
+      bzero(buff, sizeof(buff));
+      bzero(temp, sizeof(temp));
+      
+      int n = 0;
+
+      getchar();
+
+      while ((temp[n++] = getchar()) != '\n');
+      
+      temp[n - 1] = '\0';
+
+      strcat(buff, "c~"); 
+
+      strcat(buff, temp);
+      strcat(buff, "~");
+
+
+      send(sockfd, buff, sizeof(buff), 0);
+      bzero(buff, sizeof(buff));
+      recv(sockfd, buff, sizeof(buff), 0);
+
+        if ( buff[0] == '0'){
+          char e;
+          printf("Do you wany to challenge this player with rank or normal game?\n(1) Rank game\n(2) Normal game\n(other) Back\n");
+          scanf("%c", &e);
+          if (e == '1'){
+            bzero(buff, sizeof(buff));
+            strcat(buff, "r~");
+            strcat(buff, temp);
+            strcat(buff, "~");
+
+            send(sockfd, buff, sizeof(buff), 0);
+            bzero(buff, sizeof(buff));
+            recv(sockfd, buff, sizeof(buff), 0);
+
+            if (buff[0] == 'w'){
+              printf("Waiting for player to accept\n");
+              rankgame(sockfd, name);
+            }
+            else if (buff[0] == 's'){
+              rankgame(sockfd, name);
+            }
+            else continue;
+
+          }
+          else if (e == '2'){
+            bzero(buff, sizeof(buff));
+            strcat(buff, "n~");
+            strcat(buff, temp);
+            strcat(buff, "~");
+
+            send(sockfd, buff, sizeof(buff), 0);
+            bzero(buff, sizeof(buff));
+            recv(sockfd, buff, sizeof(buff), 0);
+            
+             if (buff[0] == 'w'){
+              printf("Waiting for player to accept\n");
+              normalgame(sockfd, name);
+            }
+            else if (buff[0] == 's'){
+              normalgame(sockfd, name);
+            }
+            else continue;
+          }
+          else continue;
+          printf("Waiting for player to accept\n");
+
+          break;
+        } else if (buff[0] == '2'){
+          printf("You've accepted a rank game\n");
+          rankgame(sockfd, name);
+          break;
+        } else if (buff[0] == '1'){
+          printf("You've accepted a normal game\n");
+          normalgame(sockfd, name); 
+          break;
+        } else { 
+          printf("Player is busy\n");
+          continue; 
+        }
+    }
+    if (d == '2')
+    {
+      clear();
+      continue;
+    }
+    if (d == '3')
+    {
+      send(sockfd, "r@", sizeof("r@"), 0);
+      break;
+    }
+  }
+}
+
 void showRank(int sockfd, char name[])
 {
   int a;
@@ -217,6 +465,24 @@ void showRank(int sockfd, char name[])
   getchar();
 }
 
+void showLog(int sockfd, char name[])
+{
+  int a;
+  char buff[MAX], log[500];
+  bzero(buff, sizeof(buff));
+  strcat(buff, "8");
+  strcat(buff, name);
+
+  send(sockfd, buff, sizeof(buff), 0);
+
+  bzero(buff, sizeof(buff));
+
+  recv(sockfd, log, sizeof(log), 0);
+  logNav();
+  printf("%s", log);
+  getchar();
+}
+
 void gameScreen(int sockfd)
 {
   char d;
@@ -229,12 +495,12 @@ void gameScreen(int sockfd)
     if (d == '1')
     {
       scanf("%*c");
-      normalgame(sockfd);
+      normalQueue(sockfd);
     }
     if (d == '2')
     {
       scanf("%*c");
-      rankgame(sockfd, name);
+      rankQueue(sockfd, name);
     }
     if (d == '3')
     {
@@ -242,6 +508,17 @@ void gameScreen(int sockfd)
       showRank(sockfd, name);
     }
     if (d == '4')
+    {
+      scanf("%*c");
+      challenge(sockfd);
+    }
+    if (d == '5')
+    {
+      scanf("%*c");
+      clear();
+      showLog(sockfd, name);
+    }
+    if (d == '5')
     {
       scanf("%*c");
       clear();

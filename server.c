@@ -19,12 +19,16 @@
 #define MAX 80
 #define SA struct sockaddr
 
-char currentGame[MAX];
-char rankGame[MAX];
+// char log[30];
+char currentGame[MAX][MAX];
+char rankGame[MAX][MAX];
+char userName[MAX][MAX];
+int norQueue[MAX], rankQueue[MAX];   //-3: in game, -2: offline, -1: online, >0: in queue
 
-int msg(int sockfd, char ip[])
+
+int msg(int index,int sockfd, char ip[])
 {
-  char buffer[MAX], number[MAX], charactor[MAX], msg[MAX], username[MAX], password[MAX], win[MAX], lose[MAX];
+  char buffer[MAX], number[MAX], charactor[MAX], msg[MAX], password[MAX], win[MAX], lose[MAX];
 
   int n, i, j, sendlong = 0;
 
@@ -33,10 +37,11 @@ int msg(int sockfd, char ip[])
   bzero(number, MAX);
   bzero(charactor, MAX);
   bzero(msg, MAX);
-  bzero(username, MAX);
+
   bzero(password, MAX);
   bzero(win, MAX);
   bzero(lose, MAX);
+
   if (recv(sockfd, buffer, sizeof(buffer), 0) != 0)
   {
     printf("From client: %s To client : ", buffer);
@@ -46,7 +51,7 @@ int msg(int sockfd, char ip[])
       {
         if (buffer[i + 1] == '~')
           break;
-        username[i] = buffer[i + 1];
+        userName[index][i] = buffer[i + 1];
       }
 
       for (j = 0; j < strlen(buffer); j++)
@@ -57,27 +62,29 @@ int msg(int sockfd, char ip[])
         i++;
       }
       password[j - 2] = '\0';
-      strcat(msg, _signin(username, password));
+      strcat(msg, _signin(userName[index], password));
       msg[strlen(msg)] = '\0';
       printf("%s\n", msg);
+      norQueue[index] = -1;
+      rankQueue[index] = -1;
     }
 
     else if (buffer[0] == '2') //for logout
     {
       for (i = 0; i < strlen(buffer); i++)
-        username[i] = buffer[i + 1];
+        userName[index][i] = buffer[i + 1];
 
-      username[strlen(username) - 1] = '\0';
-      strcat(msg, _signout(username));
+      userName[index][strlen(userName[index]) - 1] = '\0';
+      strcat(msg, _signout(userName[index]));
     }
 
-    else if (buffer[0] == '3') //for lockAccout
+    else if (buffer[0] == '3') //for lockAccount
     {
       for (i = 0; i < strlen(buffer); i++)
-        username[i] = buffer[i + 1];
+        userName[index][i] = buffer[i + 1];
 
-      username[strlen(username) - 1] = '\0';
-      strcat(msg, _lockAccount(username));
+      userName[index][strlen(userName[index]) - 1] = '\0';
+      strcat(msg, _lockAccount(userName[index]));
     }
 
     else if (buffer[0] == '4') // for signup
@@ -86,7 +93,7 @@ int msg(int sockfd, char ip[])
       {
         if (buffer[i + 1] == '~')
           break;
-        username[i] = buffer[i + 1];
+        userName[index][i] = buffer[i + 1];
       }
 
       for (j = 0; j < strlen(buffer); j++)
@@ -97,79 +104,255 @@ int msg(int sockfd, char ip[])
         i++;
       }
       password[j - 2] = '\0';
-      strcat(msg, _signup(username, password));
+      strcat(msg, _signup(userName[index], password));
       msg[strlen(msg)] = '\0';
       printf("%s\n", msg);
+    }
+    
+    else if (buffer[0] == 'n') // for create normal queue
+    {
+      char temp[MAX];
+      if (buffer[1]=='~'){
+          for (i = 0; i < strlen(buffer); i++)
+          {
+            if (buffer[i + 2] == '~')
+              break;
+            temp[i] = buffer[i + 2];
+          }
+            
+        for (i = 0; i < MAX; i++ ){
+          if ( i != index && strcmp(temp, userName[i]) == 0){
+            if (norQueue[i] == index){  // start game
+              norQueue[index] = i;
+              strcat(msg,"s");
+              printf("start game\n");
+            } else {                     // waiting for accept
+              norQueue[index] = i;
+              strcat(msg,"w");
+              printf("waiting for accept\n");
+            }
+          }
+        }
+        strcat(msg,"b");
+      }
+      else if (buffer[1]=='@'){
+        norQueue[index] = -1;
+      }
+      else{
+        char temp[MAX];
+        
+        int k = 0;
+        for (int i = 0; i < MAX; i++ ){
+          if ( i!= index && norQueue[i] >= -1){
+            k++;
+            sprintf(temp,"%d",k);
+            strcat(msg,temp);
+            strcat(msg,"\t");
+            strcat(msg, userName[i]);
+            bzero(temp,sizeof(temp));
+            if (norQueue[i] == index){
+              strcat(msg,"\t\033[1;31mWaiting for normal game\033[0m");
+            }
+            strcat(msg,"\n");
+
+          }
+        }
+      }
     }
 
     else if (buffer[0] == '5') // for create normal game
     {
-      for (i = 0; i < strlen(buffer); i++)
+      char log[MAX];
+      bzero(log, MAX);
+
+     for (i = 0; i < strlen(buffer); i++)
         buffer[i] = buffer[i + 1];
 
-      if (strlen(currentGame) == 0)
-      {
-        strcat(currentGame, ip);
-        strcat(currentGame, "~");
-        strcat(currentGame, buffer);
-        printf("ip %s\n", currentGame);
-        strcat(msg, "h");
-        strcat(msg, ip);
+      if (buffer[0] == '~')
+        {
+          int i;
+          int s = sscanf (buffer, "~%[^~]~%[^~]~%d~%s", win, lose, &i, log);
+          
+          if (s != 4)   
+            printf("error\n");
+          else
+            (msg,_saveLog(log,1, win,lose, i));
+          printf("%s\n", msg);
       }
-      else
-      {
-        strcat(msg, currentGame);
-        bzero(currentGame, MAX);
+      else {
+        
+
+        if (norQueue[norQueue[index]]  == -1){           
+
+          strcat(currentGame[index], ip);
+          strcat(currentGame[index], "~");
+          strcat(currentGame[index], buffer);
+          printf("ip %s\n", currentGame[index]);
+          strcat(msg, "h");
+          strcat(msg, ip);
+        } else {
+
+          strcat(msg, currentGame[norQueue[index]]);
+          bzero(currentGame[index], sizeof(currentGame[index]));  
+          bzero(currentGame[norQueue[index]], sizeof(currentGame[norQueue[index]]));  
+          norQueue[norQueue[index]] = -1;
+          norQueue[index] = -1;
+        }
       }
     }
+
+    else if (buffer[0] == 'r') // for create rank queue
+    {
+      char temp[MAX];
+      if (buffer[1]=='~'){
+          for (i = 0; i < strlen(buffer); i++)
+          {
+            if (buffer[i + 2] == '~')
+              break;
+            temp[i] = buffer[i + 2];
+          }
+            
+        for (i = 0; i < MAX; i++ ){
+          if ( i != index && strcmp(temp, userName[i]) == 0){
+            if (rankQueue[i] == index){  // start game
+              rankQueue[index] = i;
+              strcat(msg,"s");
+              printf("start game\n");
+            } else {                     // waiting for accept
+              rankQueue[index] = i;
+              strcat(msg,"w");
+              printf("waiting for accept\n");
+            }
+          }
+        }
+        strcat(msg,"b");
+      }
+      else if (buffer[1]=='@'){
+        rankQueue[index] = -1;
+      }
+      else{
+        char temp[MAX];
+        
+        int k = 0;
+        for (int i = 0; i < MAX; i++ ){
+          if ( i!= index && rankQueue[i] >= -1){
+            k++;
+            sprintf(temp,"%d",k);
+            strcat(msg,temp);
+            strcat(msg,"\t");
+            strcat(msg, userName[i]);
+            bzero(temp,sizeof(temp));
+            if (rankQueue[i] == index){
+              strcat(msg,"\t\033[1;31mWaiting for rank game\033[0m");
+            }
+            strcat(msg,"\n");
+
+          }
+        }
+      }
+    }
+
     else if (buffer[0] == '6') // for create rank game
     {
-      printf("%s\n", buffer);
+      char log[MAX];
+      bzero(log, MAX);
 
       for (i = 0; i < strlen(buffer); i++)
         buffer[i] = buffer[i + 1];
 
       if (buffer[0] == '~')
       {
-        for (i = 0; i < strlen(buffer); i++)
-          buffer[i] = buffer[i + 1];
+        int i;
+        int s = sscanf (buffer, "~%[^~]~%[^~]~%d~%s", win, lose, &i, log);
+        if (s != 4) {
+          printf("error\n");
+        };
+        if (i != 0 && i != 3)  updateWinLose(win, lose);
 
-        for (i = 0; i < strlen(buffer); i++)
-        {
-          if (buffer[i] == '~')
-            break;
-          win[i] = buffer[i];
-        }
-
-        for (j = 0; j < strlen(buffer); j++)
-        {
-          if (buffer[i] == '\n')
-            break;
-          lose[j] = buffer[i + 1];
-          i++;
-        }
-        lose[j - 2] = '\0';
-        updateWinLose(win, lose);
-        strcat(msg, "update done");
+        strcat(msg,_saveLog(log,0, win,lose, i));
+             printf("%s\n", msg);
       }
       else
-      {
-        if (strlen(rankGame) == 0)
+      { 
+          if (rankQueue[rankQueue[index]]  == -1){          
+            strcat(rankGame[index], ip);
+            strcat(rankGame[index], "~");
+            strcat(rankGame[index], buffer);
+            printf("ip %s\n", rankGame[index]);
+            strcat(msg, "h");
+            strcat(msg, ip);
+          } else {
+
+            strcat(msg, rankGame[rankQueue[index]]);
+            bzero(rankGame[index], sizeof(rankGame[index]));  
+            bzero(rankGame[rankQueue[index]], sizeof(rankGame[rankQueue[index]]));  
+            rankQueue[rankQueue[index]] = -1;
+            rankQueue[index] = -1;
+          }
+
+      }
+    }
+
+    else if (buffer[0] == 'c'){         // for challenge
+      if (buffer[1]=='~'){
+        char temp[MAX];
+        for (i = 0; i < strlen(buffer); i++)
         {
-          strcat(rankGame, ip);
-          strcat(rankGame, "~");
-          strcat(rankGame, buffer);
-          printf("ip %s\n", rankGame);
-          strcat(msg, "h");
-          strcat(msg, ip);
+          if (buffer[i + 2] == '~')
+            break;
+          temp[i] = buffer[i + 2];
         }
-        else
-        {
-          strcat(msg, rankGame);
-          bzero(rankGame, MAX);
+            
+        for (i = 0; i < MAX; i++ ){
+          if ( strcmp(temp, userName[i]) == 0){
+            if (norQueue[i] == -1 && rankQueue[i] == -1){  
+              strcat(msg,"0"); // free
+            } else {
+              if (norQueue[i] == index) {
+                norQueue[index] = i;
+                strcat(msg,"1"); // start normal game
+              }
+              if (rankQueue[i] == index) {
+                rankQueue[index] = i;
+                strcat(msg,"2"); // start rank game 
+              } 
+              if (rankQueue[i] != index || norQueue[i] != index) strcat(msg,"3"); // busy
+            }
+          }
+        }
+      } else 
+      {
+        char temp[MAX];
+        int k = 0;
+        for (int i = 0; i < MAX; i++ ){
+          if ( i!= index && rankQueue[i] >= -1){
+            k++;
+            sprintf(temp,"%d",k);
+            strcat(msg,temp);
+            strcat(msg,"\t");
+            strcat(msg, userName[i]);
+            bzero(temp,sizeof(temp));
+            if (rankQueue[i] == index){
+              strcat(msg,"\t\033[1;33mWaiting you for rank game\033[0m");
+            }
+            if (norQueue[i] == index){
+              strcat(msg,"\t\033[1;33mWaiting you for normal game\033[0m");
+            }
+            if (rankQueue[i] != -1 && rankQueue[i] != index){
+              strcat(msg,"\t\033[1;31mBusy\033[0m");
+            }
+            if (norQueue[i] != -1 && norQueue[i] != index){
+              strcat(msg,"\t\033[1;31mBusy\033[0m");
+            }
+            if (rankQueue[i] == -1 && norQueue[i] == -1){
+              strcat(msg,"\t\033[1;34mFree\033[0m");
+            }
+            strcat(msg,"\n");
+          }
         }
       }
     }
+
     else if (buffer[0] == '7')
     {
       char rank[500];
@@ -182,9 +365,20 @@ int msg(int sockfd, char ip[])
       sendlong = 1;
       send(sockfd, rank, sizeof(rank), 0);
     }
+    else if (buffer[0] == '8'){
+      char log[500];
+      bzero(log, 500);
+      for (i = 0; i < strlen(buffer); i++)
+        buffer[i] = buffer[i + 1];
+
+      strcat(log, _getLog(buffer));
+      printf("\n%s ", log);
+      sendlong = 1;
+      send(sockfd, log, sizeof(log), 0);
+    }
     if (!sendlong)
       send(sockfd, msg, sizeof(msg), 0);
-    sendlong = 0;
+    sendlong = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
     memset(msg, 0, sizeof(msg));
     return 1;
   }
@@ -207,6 +401,16 @@ int main(int argc, char *argv[])
   int max_sd;
 
   char buffer[50];
+
+  for (int i = 0; i < MAX; i++){     
+      // bzero(currentGame[i], MAX);
+      // bzero(rankGame[i], MAX);  
+      bzero(userName[i], MAX);
+      norQueue[i] = -2;
+      rankQueue[i] = -2;
+  }
+
+
 
   //set of socket descriptors
   fd_set readfds;
@@ -265,7 +469,10 @@ int main(int argc, char *argv[])
   else
     printf("Server listening..\n");
 
+
   readFile();
+  printf("Read complete\n")  ;
+  readLogFile();
 
   while (1)
   {
@@ -331,11 +538,13 @@ int main(int argc, char *argv[])
     for (i = 0; i < max_clients; i++)
     {
       sd = client_socket[i];
-
+      
       if (FD_ISSET(sd, &readfds))
       {
-        if (msg(sd, inet_ntoa(address.sin_addr)) == 0)
+        if (msg(i, sd, inet_ntoa(address.sin_addr)) == 0)
         {
+          _signout(userName[i]);
+          bzero(userName[i], MAX);
           getpeername(sd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
           printf("\nHost disconnected , ip %s , port %d \n",
                  inet_ntoa(address.sin_addr), ntohs(address.sin_port));

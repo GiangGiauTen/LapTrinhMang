@@ -21,22 +21,24 @@
 void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
 {
   strcpy(pointBroad, "000000000");
-  char buff[MAX], msg[MAX], competitorName[MAX];
-  int n;
+  char buff[MAX], msg[MAX], competitorName[MAX], log[MAX], temp[MAX];
+  int n, result;
 
+  bzero(log, MAX);
   bzero(buff, MAX);
   bzero(competitorName, MAX);
 
-  if (typeOfGame == 2)
-  {
+  
+  
     strcpy(buff, name);
     send(sockfd, buff, sizeof(buff), 0);
     recv(sockfd, competitorName, sizeof(competitorName), 0);
-  }
+
   // infinite loop for game
 
   for (;;)
   {
+    
     bzero(buff, MAX);
     clear();
 
@@ -47,6 +49,25 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     // read the message from client and copy it in buffer
     if (recv(sockfd, buff, sizeof(buff), 0) == 0)
     {
+      if (typeOfGame == 1)
+      {
+        bzero(msg, MAX);
+        strcat(msg, "5~");
+        strcat(msg, name);
+        strcat(msg, "~");
+        strcat(msg, competitorName);
+        strcat(msg, "~");
+        strcat(msg, "2");
+        strcat(msg, "~");
+        strcat(msg, log);
+
+        send(connectserver, msg, sizeof(msg), 0);
+        recv(connectserver, msg, sizeof(msg), 0);
+
+        printf("%s", msg);
+        bzero(msg, MAX);
+        printf("%s", msg);
+      }
       if (typeOfGame == 2)
       {
         bzero(msg, MAX);
@@ -54,6 +75,10 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         strcat(msg, name);
         strcat(msg, "~");
         strcat(msg, competitorName);
+        strcat(msg, "~");
+        strcat(msg, "2");
+        strcat(msg, "~");
+        strcat(msg, log);
 
         send(connectserver, msg, sizeof(msg), 0);
         recv(connectserver, msg, sizeof(msg), 0);
@@ -62,11 +87,15 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         printf("%s", msg);
       }
       printf("\n Ban da chien thang do nguoi choi kia da bo cuoc !!!");
+      printf("\n %s", pointBroad);
       getchar();
       close(sockfd);
       break;
     }
-
+    strcpy(temp,buff);
+    temp[2] = '\0';
+    strcat(log, temp);
+    bzero(temp, MAX);
     // print buffer which contains the client contents
     strcpy(pointBroad, updateBroad(pointBroad, buff, '2'));
     clear();
@@ -75,6 +104,43 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       score(name, competitorName);
 
     if (checkDraw()) {
+       if (typeOfGame == 1)
+      {
+        bzero(msg, MAX);
+        strcat(msg, "5~");
+        strcat(msg, name);
+        strcat(msg, "~");
+        strcat(msg, competitorName);
+        strcat(msg, "~");
+        strcat(msg, "0");
+        strcat(msg, "~");
+        strcat(msg, log);
+
+        send(connectserver, msg, sizeof(msg), 0);
+        recv(connectserver, msg, sizeof(msg), 0);
+
+        printf("%s", msg);
+        bzero(msg, MAX);
+        printf("%s", msg);
+      }
+      if (typeOfGame == 2)
+      {
+        bzero(msg, MAX);
+        strcat(msg, "6~");
+        strcat(msg, name);
+        strcat(msg, "~");
+        strcat(msg, competitorName);
+        strcat(msg, "~");
+        strcat(msg, "0");
+        strcat(msg, "~");
+        strcat(msg, log);
+
+        send(connectserver, msg, sizeof(msg), 0);
+        recv(connectserver, msg, sizeof(msg), 0);
+
+        bzero(msg, MAX);
+        printf("%s", msg);
+      }
       printf("Ket qua hoa!");
       getchar();
       close(sockfd);
@@ -92,12 +158,18 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     }
     // copy server message in the buffer
     do {
-      printf("Nhap vi tri muon danh : ");
+      printf("Nhap vi tri muon danh, nhap q de dau hang: ");
       bzero(buff, MAX);
 
       n = 0;
       while ((buff[n++] = getchar()) != '\n')
         ;
+
+      if (strcmp(buff, "q\n") == 0)
+      {
+        close(sockfd);
+        break;
+      }
 
       if (isPositionExits(buff))
         printf("Vi tri da ton tai!\n");
@@ -111,11 +183,37 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       break;
     }
     // and send that buffer to client
+    strcpy(temp,buff);
+    temp[2] = '\0';
+    strcat(log, temp);
+    bzero(temp, MAX);
+
     send(sockfd, buff, sizeof(buff), 0);
     strcpy(pointBroad, updateBroad(pointBroad, buff, '1'));
+
     if (checkWinner(pointBroad, '1'))
     {
+      char s;
       printf("Ban da chien thang !!!");
+
+      if (typeOfGame == 1)
+      {
+        bzero(msg, MAX);
+        strcat(msg, "5~");
+        strcat(msg, name);
+        strcat(msg, "~");
+        strcat(msg, competitorName);
+         strcat(msg, "~");
+        strcat(msg, "2");
+        strcat(msg, "~");
+        strcat(msg, log);
+
+        send(connectserver, msg, sizeof(msg), 0);
+        recv(connectserver, msg, sizeof(msg), 0);
+
+        bzero(msg, MAX);
+        printf("%s", msg);
+      }
       if (typeOfGame == 2)
       {
         bzero(msg, MAX);
@@ -123,6 +221,11 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         strcat(msg, name);
         strcat(msg, "~");
         strcat(msg, competitorName);
+         strcat(msg, "~");
+        strcat(msg, "2");
+        strcat(msg, "~");
+        strcat(msg, log);
+
 
         send(connectserver, msg, sizeof(msg), 0);
         recv(connectserver, msg, sizeof(msg), 0);
@@ -135,6 +238,8 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       break;
     }
   }
+
+
 }
 
 void startP2P(char ip[], int PORT, int typeOfGame, char name[], int connectserver)
@@ -190,7 +295,7 @@ void startP2P(char ip[], int PORT, int typeOfGame, char name[], int connectserve
     printf("server acccept the client...\n");
 
   // Function for chatting between client and server
-  // typeOfGame ==1 -> nomarl game
+  // typeOfGame ==1 -> normal game
   // typeOfGame ==2 -> rank game
   hostPerson(connfd, typeOfGame, name, connectserver);
 

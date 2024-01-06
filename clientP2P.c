@@ -40,7 +40,7 @@ void checkHostEntry(struct hostent *hostentry)
 
 // --------------------------------------------------------
 
-char *genPort()
+char *genPort()      //generate port
 {
   struct sockaddr_in servaddr;
   struct hostent *host_entry;

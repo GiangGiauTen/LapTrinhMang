@@ -6,6 +6,7 @@ void info(char name[]);
 void gameMenu(char name[]);
 void loginMenu();
 void rankNav();
+void logNav();
 void score();
 
 #endif

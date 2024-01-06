@@ -24,18 +24,18 @@
 void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
 {
   strcpy(pointBroad, "000000000");
-  char buff[MAX], msg[MAX], competitorName[MAX];
+  char buff[MAX], msg[MAX], competitorName[MAX], log[MAX], temp[MAX];
   int n;
 
+  bzero(log, MAX);
   bzero(buff, MAX);
   bzero(competitorName, MAX);
 
-  if (typeOfGame == 2)
-  {
+  
     strcpy(buff, name);
     recv(sockfd, competitorName, sizeof(competitorName), 0);
     send(sockfd, buff, sizeof(buff), 0);
-  }
+  
 
   for (;;)
   {
@@ -44,12 +44,22 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     if (typeOfGame == 2)
       score(name, competitorName);
     do {
-      printf("Nhap vi tri muon danh : ");
+      printf("Nhap vi tri muon danh, nhap q de dau hang:  ");
+
+      strcpy(temp,buff);
+      temp[2] = '\0';
+      strcat(log, temp);
+      bzero(temp, MAX);
       bzero(buff, MAX);
 
       n = 0;
       while ((buff[n++] = getchar()) != '\n')
         ;
+      if (strcmp(buff, "q\n") == 0)
+      {
+      close(sockfd);
+      break;
+      }
 
       if (isPositionExits(buff))
         printf("Vi tri da ton tai!\n");
@@ -79,6 +89,25 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     if (checkWinner(pointBroad, '2'))
     {
       printf("Ban da chien thang !!!");
+      if (typeOfGame == 1)
+      {
+        bzero(msg, MAX);
+        strcat(msg, "5~");
+        strcat(msg, name);
+        strcat(msg, "~");
+        strcat(msg, competitorName);
+        strcat(msg, "~");
+        strcat(msg, "1");
+        strcat(msg, "~");
+        strcat(msg, log);
+
+        send(connectserver, msg, sizeof(msg), 0);
+        recv(connectserver, msg, sizeof(msg), 0);
+
+        printf("%s", msg);
+        bzero(msg, MAX);
+        printf("%s", msg);
+      }
       if (typeOfGame == 2)
       {
         bzero(msg, MAX);
@@ -86,6 +115,10 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         strcat(msg, name);
         strcat(msg, "~");
         strcat(msg, competitorName);
+        strcat(msg, "~");
+        strcat(msg, "1");
+        strcat(msg, "~");
+        strcat(msg, log);
 
         send(connectserver, msg, sizeof(msg), 0);
         recv(connectserver, msg, sizeof(msg), 0);
@@ -96,11 +129,30 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       close(sockfd);
       break;
     }
-
+    
     bzero(buff, sizeof(buff));
     printf("Doi doi phuong danh ...\n");
     if (recv(sockfd, buff, sizeof(buff), 0) == 0)
     {
+      if (typeOfGame == 1)
+      {
+        bzero(msg, MAX);
+        strcat(msg, "5~");
+        strcat(msg, name);
+        strcat(msg, "~");
+        strcat(msg, competitorName);
+        strcat(msg, "~");
+        strcat(msg, "1");
+        strcat(msg, "~");
+        strcat(msg, log);
+
+        send(connectserver, msg, sizeof(msg), 0);
+        recv(connectserver, msg, sizeof(msg), 0);
+
+        printf("%s", msg);
+        bzero(msg, MAX);
+        printf("%s", msg);
+      }
       if (typeOfGame == 2)
       {
         bzero(msg, MAX);
@@ -108,6 +160,11 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         strcat(msg, name);
         strcat(msg, "~");
         strcat(msg, competitorName);
+         strcat(msg, "~");
+        strcat(msg, "1");
+        strcat(msg, "~");
+        strcat(msg, log);
+
 
         send(connectserver, msg, sizeof(msg), 0);
         recv(connectserver, msg, sizeof(msg), 0);
@@ -120,6 +177,11 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       close(sockfd);
       break;
     }
+    
+    strcpy(temp,buff);
+    temp[2] = '\0';
+    strcat(log, temp);
+    bzero(temp, MAX);
     strcpy(pointBroad, updateBroad(pointBroad, buff, '1'));
 
     if (checkWinner(pointBroad, '1'))
@@ -130,6 +192,43 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       break;
     }
     if (checkDraw()) {
+      if (typeOfGame == 1)
+      {
+        bzero(msg, MAX);
+        strcat(msg, "5~");
+        strcat(msg, name);
+        strcat(msg, "~");
+        strcat(msg, competitorName);
+        strcat(msg, "~");
+        strcat(msg, "0");
+        strcat(msg, "~");
+        strcat(msg, log);
+
+        send(connectserver, msg, sizeof(msg), 0);
+        recv(connectserver, msg, sizeof(msg), 0);
+
+        printf("%s", msg);
+        bzero(msg, MAX);
+        printf("%s", msg);
+      }
+      if (typeOfGame == 2)
+      {
+        bzero(msg, MAX);
+        strcat(msg, "6~");
+        strcat(msg, name);
+        strcat(msg, "~");
+        strcat(msg, competitorName);
+        strcat(msg, "~");
+        strcat(msg, "0");
+        strcat(msg, "~");
+        strcat(msg, log);
+
+        send(connectserver, msg, sizeof(msg), 0);
+        recv(connectserver, msg, sizeof(msg), 0);
+
+        bzero(msg, MAX);
+        printf("%s", msg);
+      }
       printf("Ket qua hoa!");
       getchar();
       close(sockfd);

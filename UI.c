@@ -125,7 +125,9 @@ void gameMenu(char name[])
   printf(" ]\n\n");
   printf("    (\033[1;31m1\033[0m) Danh thuong\n");
   printf("    (\033[1;31m2\033[0m) Danh xep hang\n");
-  printf("    (\033[1;31m3\033[0m) Xem thu hang\n\n");
+  printf("    (\033[1;31m3\033[0m) Thach dau\n\n");
+  printf("    (\033[1;31m4\033[0m) Xem thu hang\n\n");
+  printf("    (\033[1;31m5\033[0m) Xem lich su dau\n");
 
   printf("    (\033[1;31m4\033[0m) Gioi thieu ve tro choi\n");
   printf("    (\033[1;31mq\033[0m) Quit\n");
@@ -182,6 +184,51 @@ void rankNav()
   reset();
   red();
   printf("WIN/LOSE\n");
+  reset();
+  printf("+-----------------------------------------------------------+\n");
+}
+
+void logNav()
+{
+  printf("+-----------------------------------------------------------+\n");
+  red();
+  printf("TYPE\t");
+  reset();
+  red();
+  printf("OPPONENT\t");
+  reset();
+  red();
+  printf("FIRST MOVE\n");
+  reset();
+  red();
+  printf("RESULT\t");
+  reset();
+  red();
+  printf("LOG\n");
+  reset();
+  printf("+-----------------------------------------------------------+\n");
+}
+
+void waitNav()
+{
+  printf("+-----------------------------------------------------------+\n");
+  red();
+  printf("RANK\t");
+  reset();
+  red();
+  printf("PLAYER\t");
+  reset();
+  red();
+  printf("WIN\t");
+  reset();
+  red();
+  printf("LOSE\t");
+  reset();
+  red();
+  printf("WIN/LOSE\n");
+  reset();
+  red();
+  printf("STATUS\n");
   reset();
   printf("+-----------------------------------------------------------+\n");
 }

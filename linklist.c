@@ -9,6 +9,53 @@
 node *account;
 rank *rankfirst;
 
+
+loggame *initLogGameList(loggame *pre,int type, int result, char player1[], char player2[], char log[]){
+  loggame *temp;
+  temp = (loggame *)malloc(sizeof(loggame));
+  strcpy(temp->log, log);
+  strcpy(temp->player1, player1);
+  strcpy(temp->player2, player2);
+  temp->type = type;
+  temp->result = result;
+  temp->next = NULL;
+  
+  if (loggamefirst == NULL)
+  {
+    loggamefirst = temp;
+    pre = loggamefirst;
+  }
+  else
+  {
+    pre->next = temp;
+    pre = pre->next;
+  }
+  return pre;
+}
+
+void addToLogGameList(char log[],int type,int result,char player1[],char player2[]){
+  loggame *checkLast = loggamefirst;
+  loggame *temp;
+  temp = (loggame *)malloc(sizeof(loggame));
+
+  strcpy(temp->log, log);
+  temp->type = type;
+  temp->result = result;
+  strcpy(temp->player1, player1);
+  strcpy(temp->player2, player2);
+
+
+  temp->next = NULL;
+  while (checkLast->next != NULL)
+  {
+    checkLast = checkLast->next;
+  }
+
+  checkLast->next = temp;
+}
+
+
+
 node *initLinkList(node *pre, char username[], char password[], int status, int win, int lose)
 {
   node *temp;
@@ -194,3 +241,4 @@ void printfRank()
     temp = temp->next;
   }
 }
+

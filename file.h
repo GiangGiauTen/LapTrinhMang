@@ -3,6 +3,8 @@
 
 #include "linklist.h"
 
+void readLogFile();
+void writeLogFile();    
 void readFile();
 void writeFile();
 
