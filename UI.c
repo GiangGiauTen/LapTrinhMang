@@ -59,7 +59,7 @@ void playerBroad(char broad[])
   reset();
   printf("|");
   red();
-  printf("             TOA DO             \n");
+  printf("             COORDINATES             \n");
   reset();
   printf("             |   |            |             |    |           \n");
   printf("          ");
@@ -115,7 +115,7 @@ void playerBroad2(const int broad[])
   reset();
   printf("|");
   red();
-  printf("             TOA DO             \n");
+  printf("             COORDINATES               \n");
   reset();
   printf("             |   |            |             |    |           \n");
   printf("          ");
@@ -179,35 +179,17 @@ void gameMenu(char name[])
   printf("MAIN MENU");
   reset();
   printf(" ]\n\n");
-  printf("    (\033[1;31m1\033[0m) Danh thuong\n");
-  printf("    (\033[1;31m2\033[0m) Danh xep hang\n");
-  printf("    (\033[1;31m3\033[0m) Danh voi may\n");
-  printf("    (\033[1;31m4\033[0m) Thach dau\n\n");
-  printf("    (\033[1;31m5\033[0m) Xem thu hang\n");
-  printf("    (\033[1;31m6\033[0m) Xem lich su dau\n");
+  printf("    (\033[1;31m1\033[0m) Normal game\n");
+  printf("    (\033[1;31m2\033[0m) Rank game\n");
+  printf("    (\033[1;31m3\033[0m) VS Cute Bot\n");
+  printf("    (\033[1;31m4\033[0m) Chanlenge\n\n");
+  printf("    (\033[1;31m5\033[0m) Ranking\n");
+  printf("    (\033[1;31m6\033[0m) Match log\n");
 
-  printf("    (\033[1;31m7\033[0m) Gioi thieu ve tro choi\n");
   printf("    (\033[1;31mq\033[0m) Quit\n");
 }
 
-void info(char name[])
-{
-  char a;
-  nav(name);
-  printf("Voi niem dam me cac game co dien Studio \033[1;34mLao Hac 1977\033[0m dem \n");
-  printf("lai cho cac ban trai nghiem choi game \033[1;34mTicTacToe\033[0m chay tren \n");
-  printf("he dieu hanh Linux voi giao dien than thien de choi. Ban   \n");
-  printf("co the choi vs cac ban cua minh thong qua internet (su dung \n");
-  printf("ket noi TCP/IP). Tat ca nhung gi ban phai lam la tao 1  \n");
-  printf("room moi nguoi se tham gia room cua ban. Hoac ban co the \n");
-  printf("tham gia room cua nguoi khac de bat dau tro choi.\n");
-  printf("neu trong luc choi ban muon thoat hay nhan phim q. \n\n");
-  blue();
-  printf("CaroChess beta-1.0\n\n");
-  reset();
-  printf("Press \033[1;31menter\033[0m de quay ve man hinh chinh\n");
-  scanf("%c", &a);
-}
+
 
 void loginMenu()
 {
@@ -219,8 +201,8 @@ void loginMenu()
   reset();
   printf(" ]\n\n");
 
-  printf("    (\033[1;31m1\033[0m) Dang nhap\n");
-  printf("    (\033[1;31m2\033[0m) Dang ki\n\n");
+  printf("    (\033[1;31m1\033[0m) Log in\n");
+  printf("    (\033[1;31m2\033[0m) Sign in\n\n");
   printf("    (1-2, other to \033[1;34mquit\033[0m):\n");
 }
 
@@ -258,7 +240,7 @@ void logNav()
   printf("RESULT\t");
   reset();
   red();
-  printf("FIRST MOVE\n");
+  printf("FIRST MOVE\t");
   reset();
   red();
   printf("LOG\n");
@@ -282,7 +264,7 @@ void waitNav()
   printf("LOSE\t");
   reset();
   red();
-  printf("WIN/LOSE\n");
+  printf("WIN/LOSE\t");
   reset();
   red();
   printf("STATUS\n");

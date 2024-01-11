@@ -44,7 +44,7 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     if (typeOfGame == 2)
       score(name, competitorName);
     do {
-      printf("Nhap vi tri muon danh, nhap q de dau hang:  ");
+      printf("It's your turn, enter the position where you want to place your mark. \nType 'q' to forfeit the game. \n ");
 
     
       bzero(buff, MAX);
@@ -59,9 +59,9 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       }
 
       if (isPositionExits(buff))
-        printf("Vi tri da ton tai!\n");
+        printf("Invalid move! That spot is already taken. Try again.\n");
       else if (!isValidMove(buff))
-        printf("Vi tri khong hop le!\n");
+        printf("Invalid move. The selected cell is not available. Make another choice.\n");
     } while(isPositionExits(buff) || !isValidMove(buff));
 
     
@@ -79,7 +79,7 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     send(sockfd, buff, sizeof(buff), 0);
 
     if (checkDraw()) {
-      printf("Ket qua hoa!");
+      printf("It's a draw! The game is a tie.");
       getchar();
       close(sockfd);
       break;
@@ -87,7 +87,7 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
 
     if (checkWinner(pointBroad, '2'))
     {
-      printf("Ban da chien thang !!!");
+      printf("You won !!!");
       if (typeOfGame == 1)
       {
         bzero(msg, MAX);
@@ -130,7 +130,7 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     }
     
     bzero(buff, sizeof(buff));
-    printf("Doi doi phuong danh ...\n");
+    printf("Waiting for opponent ...\n");
     if (recv(sockfd, buff, sizeof(buff), 0) == 0)
     {
       if (typeOfGame == 1)
@@ -171,7 +171,7 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         bzero(msg, MAX);
         printf("%s", msg);
       }
-      printf("\n Ban da chien thang do nguoi choi kia da bo cuoc !!!");
+      printf("\n Your opponent has forfeited the game. You won !!!");
       getchar();
       close(sockfd);
       break;
@@ -185,7 +185,7 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
 
     if (checkWinner(pointBroad, '1'))
     {
-      printf("Ban da thua cuoc !!!");
+      printf("You lose !!!");
       getchar();
       close(sockfd);
       break;
@@ -228,7 +228,7 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         bzero(msg, MAX);
         printf("%s", msg);
       }
-      printf("Ket qua hoa!");
+      printf("It's a draw! The game is a tie.");
       getchar();
       close(sockfd);
       break;

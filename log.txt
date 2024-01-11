@@ -1,3 +1,5 @@
 1 long binh 1 a1a2b1b2c1
 1 binh long 2 a2a1c3b1c2c1
 1 binh long 1 a1c2c3
+1 long binh 1 a1c2b1c3c1
+1 binh long 1 b2a1c2

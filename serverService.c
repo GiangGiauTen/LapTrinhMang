@@ -164,7 +164,7 @@ char *_getLog(char name[])
       strcat(sendLog, "\t");
       if (strcmp(name, temp->player1) == 0){
           strcat(sendLog, temp->player2);
-          strcat(sendLog, "\t");
+          strcat(sendLog, "\t\t");
           if (temp->result == 0)
               strcat(sendLog, "\033[1;33mDraw\033[0m");
           else if (temp->result == 1)
@@ -180,7 +180,7 @@ char *_getLog(char name[])
       }
       else{
           strcat(sendLog, temp->player1);
-          strcat(sendLog, "\t");
+          strcat(sendLog, "\t\t");
           if (temp->result == 0)
               strcat(sendLog, "\033[1;33mDraw\033[0m");
           else 

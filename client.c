@@ -527,12 +527,6 @@ void gameScreen(int sockfd)
       clear();
       showLog(sockfd, name);
     }
-    if (d == '7')
-    {
-      scanf("%*c");
-      clear();
-      info(name);
-    }
     if (d == 'q')
     {
       scanf("%*c");

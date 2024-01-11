@@ -45,7 +45,7 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     ingame(pointBroad);
     if (typeOfGame == 2)
       score(name, competitorName);
-    printf("Doi doi phuong danh ...\n");
+    printf("Waiting for opponent ...\n");
     // read the message from client and copy it in buffer
     if (recv(sockfd, buff, sizeof(buff), 0) == 0)
     {
@@ -86,7 +86,7 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         bzero(msg, MAX);
         printf("%s", msg);
       }
-      printf("\n Ban da chien thang do nguoi choi kia da bo cuoc !!!");
+      printf("\n Your opponent has forfeited the game. You won !!!");
       printf("\n %s", pointBroad);
       getchar();
       close(sockfd);
@@ -142,7 +142,7 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         bzero(msg, MAX);
         printf("%s", msg);
       }
-      printf("Ket qua hoa!");
+      printf("It's a draw! The game is a tie.");
       getchar();
       close(sockfd);
       break;
@@ -151,7 +151,7 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     if (checkWinner(pointBroad, '2'))
     {
       bzero(buff, MAX);
-      printf("Ban da thua cuoc !!!");
+      printf("You lose !!!");
 
       getchar();
       close(sockfd);
@@ -159,7 +159,7 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     }
     // copy server message in the buffer
     do {
-      printf("Nhap vi tri muon danh, nhap q de dau hang: ");
+      printf("It's your turn, enter the position where you want to place your mark. \nType 'q' to forfeit the game. \n");
       bzero(buff, MAX);
 
       n = 0;
@@ -173,9 +173,9 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       }
 
       if (isPositionExits(buff))
-        printf("Vi tri da ton tai!\n");
+        printf("\nInvalid move! That spot is already taken. Try again.\n");
       else if (!isValidMove(buff))
-        printf("Vi tri khong hop le!\n");
+        printf("\nInvalid move. The selected cell is not available. Make another choice.\n");
     } while(isPositionExits(buff) || !isValidMove(buff));
 
     if (strcmp(buff, "q\n") == 0)
@@ -197,7 +197,7 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     if (checkWinner(pointBroad, '1'))
     {
       char s;
-      printf("Ban da chien thang !!!");
+      printf("You won !!!");
 
       if (typeOfGame == 1)
       {
