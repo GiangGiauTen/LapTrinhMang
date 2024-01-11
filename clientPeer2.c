@@ -267,7 +267,7 @@ void connectP2P(char ip[], int PORT, int typeOfGame, char name[], int connectser
   if (connect(sockfd, (SA *)&servaddr, sizeof(servaddr)) != 0)
   {
     printf("connection with the server failed...\n");
-    exit(0);
+    return;
   }
   else
     printf("connected to the server..\n");

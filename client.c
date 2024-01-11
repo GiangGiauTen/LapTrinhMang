@@ -380,7 +380,7 @@ void challenge(int sockfd){
 
         if ( buff[0] == '0'){
           char e;
-          printf("Do you wany to challenge this player with rank or normal game?\n(1) Rank game\n(2) Normal game\n(other) Back\n");
+          printf("Do you want to challenge this player with rank or normal game?\n(1) Rank game\n(2) Normal game\n(other) Back\n");
           scanf("%c", &e);
           if (e == '1'){
             bzero(buff, sizeof(buff));

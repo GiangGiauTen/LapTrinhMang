@@ -24,10 +24,10 @@ void nav(char name[])
 {
   printf("+-----------------------------------------------------------+\n");
   blue();
-  printf("  CaroChess 1.0-beta");
+  printf("  TikTakToe Game 10.0");
   reset();
   yellow();
-  printf("                                 %s\n", name);
+  printf("                               %s\n", name);
   reset();
   printf("+-----------------------------+-----------------------------+\n");
 }

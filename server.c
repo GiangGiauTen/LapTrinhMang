@@ -176,11 +176,11 @@ int msg(int index,int sockfd, char ip[])
         {
           int i;
           int s = sscanf (buffer, "~%[^~]~%[^~]~%d~%s", win, lose, &i, log);
-          
+            
           if (s != 4)   
             printf("error\n");
           else
-            (msg,_saveLog(log,1, win,lose, i));
+            strcat(msg,_saveLog(log,1, win,lose, i));
           printf("%s\n", msg);
       }
       else {

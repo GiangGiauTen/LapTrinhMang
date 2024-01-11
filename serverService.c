@@ -102,7 +102,16 @@ char *_getRank(char name[])
 
   while (ranktemp)
   {
-
+    if (strcmp("0", ranktemp->username) == 0)
+    {
+      ranktemp = ranktemp->next;
+      continue;
+    }
+    if (strcmp("\0", ranktemp->username) == 0)
+    {
+      ranktemp = ranktemp->next;
+      continue;
+    }
     str = (char *)calloc(3, sizeof(char));
     if (strcmp(name, ranktemp->username) == 0)
       strcat(sendRank, "\033[1;33m");

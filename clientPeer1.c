@@ -287,6 +287,14 @@ void startP2P(char ip[], int PORT, int typeOfGame, char name[], int connectserve
     printf("Waiting another player ...\n");
   len = sizeof(cli);
 
+  printf("Enter 'q' to stop waiting.\n");
+  char d;
+  scanf("%c", &d);
+  if (d == 'q')
+  {
+    close(sockfd);
+    return;
+  }
   // Accept the data packet from client and verification
   connfd = accept(sockfd, (SA *)&cli, &len);
   if (connfd < 0)
