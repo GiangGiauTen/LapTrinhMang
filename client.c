@@ -33,7 +33,11 @@ void challenge(int sockfd);
 void showRank(int sockfd, char name[]);
 void showLog(int sockfd, char name[]);
 void gameScreen(int sockfd);
-
+int win(const int board[9]);
+int minimax(int board[9], int player);
+void computerMove(int board[9]) ;
+void playerMove(int board[9]);
+void botgame(char name[]);
 
 void login(int sockfd)
 {
@@ -505,6 +509,11 @@ void gameScreen(int sockfd)
     if (d == '3')
     {
       scanf("%*c");
+      botgame(name);
+    }
+    if (d == '5')
+    {
+      scanf("%*c");
       showRank(sockfd, name);
     }
     if (d == '4')
@@ -512,13 +521,13 @@ void gameScreen(int sockfd)
       scanf("%*c");
       challenge(sockfd);
     }
-    if (d == '5')
+    if (d == '6')
     {
       scanf("%*c");
       clear();
       showLog(sockfd, name);
     }
-    if (d == '5')
+    if (d == '7')
     {
       scanf("%*c");
       clear();
@@ -532,6 +541,140 @@ void gameScreen(int sockfd)
     }
   }
 }
+
+int win(const int board[9]) {
+    //determines if a player has won, returns 0 otherwise.
+    unsigned wins[8][3] = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};
+    int i;
+    for(i = 0; i < 8; ++i) {
+        if(board[wins[i][0]] != 0 &&
+           board[wins[i][0]] == board[wins[i][1]] &&
+           board[wins[i][0]] == board[wins[i][2]])
+            return board[wins[i][2]];
+    }
+    return 0;
+}
+
+int minimax(int board[9], int player) {
+    //How is the position like for player (their turn) on board?
+    int winner = win(board);
+    if(winner != 0) return winner*player;
+    
+    int move = -1;
+    int score = -2;//Losing moves are preferred to no move
+    int i;
+    for(i = 0; i < 9; ++i) {//For all moves,
+        if(board[i] == 0) {//If legal,
+            board[i] = player;//Try the move
+            int thisScore = -minimax(board, player*-1);
+            if(thisScore > score) {
+                score = thisScore;
+                move = i;
+            }//Pick the one that's worst for the opponent
+            board[i] = 0;//Reset board after try
+        }
+    }
+    if(move == -1) return 0;
+    return score;
+}
+
+void computerMove(int board[9]) {
+    int move = -1;
+    int score = -2;
+    int i;
+    for(i = 0; i < 9; ++i) {
+        if(board[i] == 0) {
+            board[i] = 1;
+            int tempScore = -minimax(board, -1);
+            board[i] = 0;
+            if(tempScore > score) {
+                score = tempScore;
+                move = i;
+            }
+        }
+    }
+    //returns a score based on minimax tree at a given node.
+    board[move] = 1;
+}
+int checkmove( char location[])
+{
+  if (strcmp(location, "a1\n") == 0)
+    return 0;
+  if (strcmp(location, "a2\n") == 0)
+    return 1;
+  if (strcmp(location, "a3\n") == 0)
+    return 2;
+  if (strcmp(location, "b1\n") == 0)
+    return 3;
+  if (strcmp(location, "b2\n") == 0)
+    return 4;
+  if (strcmp(location, "b3\n") == 0)
+    return 5;
+  if (strcmp(location, "c1\n") == 0)
+    return 6;
+  if (strcmp(location, "c2\n") == 0)
+    return 7;
+  if (strcmp(location, "c3\n") == 0)
+    return 8;
+
+  return -1;
+}
+void playerMove(int board[9]) {
+    int move = 0;
+    do {
+        printf("\nInput move: ");
+        
+        char buff[MAX];
+        bzero(buff, MAX);
+
+        int n = 0;
+        while ((buff[n++] = getchar()) != '\n')
+          ;
+        move = checkmove(buff);
+    } while (move >= 9 || move < 0 && board[move] == 0);
+    board[move] = -1;
+}
+
+void botgame(char name[])
+{
+   int board[9] = {0,0,0,0,0,0,0,0,0};
+    //computer squares are 1, player squares are -1.
+    printf("Computer: O, You: X\nPlay (1)st or (2)nd? ");
+    int player=0;
+    scanf("%d",&player);
+    printf("\n");
+    unsigned turn;
+    for(turn = 0; turn < 9 && win(board) == 0; ++turn) {
+        if((turn+player) % 2 == 0)
+            computerMove(board);
+        else {
+            clear();
+            score(name, "Cute Bot");
+            playerBroad2(board);
+            playerMove(board);
+        }
+    }
+    switch(win(board)) {
+        case 0:
+            printf("A draw. How droll.\n");
+            getchar();
+            break;
+        case 1:
+            clear();
+            score(name, "Cute Bot");
+            playerBroad2(board);
+            printf("You lose.\n");
+            getchar();
+            break;
+        case -1:
+            printf("You win. Inconceivable!\n");
+            getchar();
+            break;
+    }
+}
+
+
+
 
 int main(int argc, char *argv[])
 {

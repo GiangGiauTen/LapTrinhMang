@@ -92,6 +92,7 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       close(sockfd);
       break;
     }
+    printf("%s\n", buff);
     strcpy(temp,buff);
     temp[2] = '\0';
     strcat(log, temp);
@@ -183,6 +184,8 @@ void hostPerson(int sockfd, int typeOfGame, char name[], int connectserver)
       break;
     }
     // and send that buffer to client
+
+    printf("%s", buff);
     strcpy(temp,buff);
     temp[2] = '\0';
     strcat(log, temp);

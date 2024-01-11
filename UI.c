@@ -88,6 +88,62 @@ void playerBroad(char broad[])
   printf("             |   |            |             |    |           \n");
 }
 
+void printXO2(int XO)
+{
+  if (XO == 1)
+  {
+    red();
+    printf("O");
+    reset();
+  }
+  else if (XO == -1)
+  {
+    blue();
+    printf("X");
+    reset();
+  }
+  else
+  {
+    printf(" ");
+  }
+}
+
+void playerBroad2(const int broad[])
+{
+  red();
+  printf("            G-A-M-E           ");
+  reset();
+  printf("|");
+  red();
+  printf("             TOA DO             \n");
+  reset();
+  printf("             |   |            |             |    |           \n");
+  printf("          ");
+  printXO2(broad[0]);
+  printf("  | ");
+  printXO2(broad[1]);
+  printf(" |  ");
+  printXO2(broad[2]);
+  printf("         |          \033[1;34ma1\033[0m | \033[1;34ma2\033[0m | \033[1;34ma3\033[0m        \n");
+  printf("        -----|---|-----       |        -----|----|-----      \n");
+  printf("          ");
+  printXO2(broad[3]);
+  printf("  | ");
+  printXO2(broad[4]);
+  printf(" |  ");
+  printXO2(broad[5]);
+  printf("         |          \033[1;34mb1\033[0m | \033[1;34mb2\033[0m | \033[1;34mb3\033[0m        \n");
+  printf("        -----|---|-----       |        -----|----|-----      \n");
+  printf("          ");
+  printXO2(broad[6]);
+  printf("  | ");
+  printXO2(broad[7]);
+  printf(" |  ");
+  printXO2(broad[8]);
+  printf("         |          \033[1;34mc1\033[0m | \033[1;34mc2\033[0m | \033[1;34mc3\033[0m        \n");
+  printf("             |   |            |             |    |           \n");
+}
+
 void score(char name1[], char name2[])
 {
   printf("+-----------------------------+-----------------------------+\n");
@@ -125,11 +181,12 @@ void gameMenu(char name[])
   printf(" ]\n\n");
   printf("    (\033[1;31m1\033[0m) Danh thuong\n");
   printf("    (\033[1;31m2\033[0m) Danh xep hang\n");
-  printf("    (\033[1;31m3\033[0m) Thach dau\n\n");
-  printf("    (\033[1;31m4\033[0m) Xem thu hang\n\n");
-  printf("    (\033[1;31m5\033[0m) Xem lich su dau\n");
+  printf("    (\033[1;31m3\033[0m) Danh voi may\n");
+  printf("    (\033[1;31m4\033[0m) Thach dau\n\n");
+  printf("    (\033[1;31m5\033[0m) Xem thu hang\n");
+  printf("    (\033[1;31m6\033[0m) Xem lich su dau\n");
 
-  printf("    (\033[1;31m4\033[0m) Gioi thieu ve tro choi\n");
+  printf("    (\033[1;31m7\033[0m) Gioi thieu ve tro choi\n");
   printf("    (\033[1;31mq\033[0m) Quit\n");
 }
 
@@ -198,10 +255,10 @@ void logNav()
   printf("OPPONENT\t");
   reset();
   red();
-  printf("FIRST MOVE\n");
+  printf("RESULT\t");
   reset();
   red();
-  printf("RESULT\t");
+  printf("FIRST MOVE\n");
   reset();
   red();
   printf("LOG\n");

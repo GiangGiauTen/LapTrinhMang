@@ -46,10 +46,7 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
     do {
       printf("Nhap vi tri muon danh, nhap q de dau hang:  ");
 
-      strcpy(temp,buff);
-      temp[2] = '\0';
-      strcat(log, temp);
-      bzero(temp, MAX);
+    
       bzero(buff, MAX);
 
       n = 0;
@@ -67,16 +64,18 @@ void joinPerson(int sockfd, int typeOfGame, char name[], int connectserver)
         printf("Vi tri khong hop le!\n");
     } while(isPositionExits(buff) || !isValidMove(buff));
 
-    if (strcmp(buff, "q\n") == 0)
-    {
-      close(sockfd);
-      break;
-    }
+    
     strcpy(pointBroad, updateBroad(pointBroad, buff, '2'));
     clear();
     ingame(pointBroad);
     if (typeOfGame == 2)
       score(name, competitorName);
+
+    strcpy(temp,buff);
+    temp[2] = '\0';
+    strcat(log, temp);
+    bzero(temp, MAX);
+    
     send(sockfd, buff, sizeof(buff), 0);
 
     if (checkDraw()) {

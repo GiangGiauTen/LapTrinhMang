@@ -112,6 +112,8 @@ int msg(int index,int sockfd, char ip[])
     else if (buffer[0] == 'n') // for create normal queue
     {
       char temp[MAX];
+      char ready[MAX];
+      bzero(ready, MAX);
       if (buffer[1]=='~'){
           for (i = 0; i < strlen(buffer); i++)
           {
@@ -146,17 +148,19 @@ int msg(int index,int sockfd, char ip[])
           if ( i!= index && norQueue[i] >= -1){
             k++;
             sprintf(temp,"%d",k);
-            strcat(msg,temp);
-            strcat(msg,"\t");
-            strcat(msg, userName[i]);
+            strcat(ready,temp);
+            strcat(ready,"\t");
+            strcat(ready, userName[i]);
             bzero(temp,sizeof(temp));
             if (norQueue[i] == index){
-              strcat(msg,"\t\033[1;31mWaiting for normal game\033[0m");
+              strcat(ready,"\t\033[1;31mWaiting for normal game\033[0m");
             }
-            strcat(msg,"\n");
+            strcat(ready,"\n");
 
           }
         }
+        sendlong =1;
+        send(sockfd, ready, sizeof(ready), 0);
       }
     }
 
@@ -204,6 +208,8 @@ int msg(int index,int sockfd, char ip[])
     else if (buffer[0] == 'r') // for create rank queue
     {
       char temp[MAX];
+      char ready[MAX];
+      bzero(ready, MAX);
       if (buffer[1]=='~'){
           for (i = 0; i < strlen(buffer); i++)
           {
@@ -238,17 +244,18 @@ int msg(int index,int sockfd, char ip[])
           if ( i!= index && rankQueue[i] >= -1){
             k++;
             sprintf(temp,"%d",k);
-            strcat(msg,temp);
-            strcat(msg,"\t");
-            strcat(msg, userName[i]);
+            strcat(ready,temp);
+            strcat(ready,"\t");
+            strcat(ready, userName[i]);
             bzero(temp,sizeof(temp));
             if (rankQueue[i] == index){
-              strcat(msg,"\t\033[1;31mWaiting for rank game\033[0m");
+              strcat(ready,"\t\033[1;31mWaiting for rank game\033[0m");
             }
-            strcat(msg,"\n");
-
+            strcat(ready,"\n");
           }
         }
+        sendlong =1;
+        send(sockfd, ready, sizeof(ready), 0);
       }
     }
 
@@ -352,8 +359,23 @@ int msg(int index,int sockfd, char ip[])
         }
       }
     }
+    else if (buffer[0]=='x'){                         // reject challenge request
+      for (i = 0; i < strlen(buffer); i++)
+        buffer[i] = buffer[i + 1];
+      
+      for (i = 0; i < MAX; i++){
+        if (strcmp(buffer, userName[i]) == 0){
+          if (norQueue[i] == index) norQueue[i] = -1;
+          if (rankQueue[i] == index) rankQueue[i] = -1;
+        }
+        send(i,"x",sizeof("x"),0);
+        recv(i,buffer,sizeof(buffer),0);
 
-    else if (buffer[0] == '7')
+        if (buffer[0] == 'a') strcat(msg,"Reject successfully");
+      }
+    }
+
+    else if (buffer[0] == '7')        // for get rank
     {
       char rank[500];
       bzero(rank, 500);
@@ -365,7 +387,7 @@ int msg(int index,int sockfd, char ip[])
       sendlong = 1;
       send(sockfd, rank, sizeof(rank), 0);
     }
-    else if (buffer[0] == '8'){
+    else if (buffer[0] == '8'){       // get log
       char log[500];
       bzero(log, 500);
       for (i = 0; i < strlen(buffer); i++)

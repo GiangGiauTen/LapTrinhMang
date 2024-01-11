@@ -8,5 +8,7 @@ void loginMenu();
 void rankNav();
 void logNav();
 void score();
+void playerBroad2(const int broad[]);
+
 
 #endif
